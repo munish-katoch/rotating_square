@@ -3,6 +3,7 @@ package com.katoch.rotatingsquare;
 import android.content.ClipData;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -10,9 +11,19 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements View.OnTouchListener, View.OnDragListener {
+import com.katoch.rotatingsquare.data.DataTimeRepository;
+import com.katoch.rotatingsquare.presenter.DataTimePresenter;
+import com.katoch.rotatingsquare.presenter.IDataTimePresenter;
+
+public class MainActivity extends AppCompatActivity implements View.OnTouchListener, View.OnDragListener, IDateTimeView {
+
+    private static final String TAG = "MainActivity";
+
+    //ToDo Inject it.
+    public IDataTimePresenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,39 +34,35 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
         findViewById(R.id.main_area).setOnDragListener(this);
         findViewById(R.id.drawable_area).setOnDragListener(this);
+        mPresenter = new DataTimePresenter(new DataTimeRepository());
+        mPresenter.attach(this);
+        mPresenter.requestDateTimeInfo();
     }
 
     @Override
     public boolean onDrag(View view, DragEvent dragEvent) {
         int action = dragEvent.getAction();
         switch (dragEvent.getAction()) {
-            case DragEvent.ACTION_DRAG_STARTED:
-                // do nothing
-                break;
-            case DragEvent.ACTION_DRAG_ENTERED:
-
-                break;
-            case DragEvent.ACTION_DRAG_EXITED:
-
-                break;
             case DragEvent.ACTION_DROP:
                 // Dropped, reassign View to ViewGroup
-                Toast.makeText(view.getContext(),"Drop", Toast.LENGTH_LONG).show();
                 View v = (View) dragEvent.getLocalState();
-
-                if (view.getId() == R.id.main_area || view.getId() == R.id.drawable_area) {
+                if (view.getId() == R.id.drawable_area) {
 
                     ViewGroup source = (ViewGroup) v.getParent();
                     source.removeView(v);
 
                     LinearLayout target = (LinearLayout) view;
+                    rotate(v);
                     target.addView(v);
+                    v.setVisibility(View.VISIBLE);
+                }  else {
+                    findViewById(R.id.time).setVisibility(View.VISIBLE);
+                    rotate(findViewById(R.id.time));
+                    return false;
                 }
-                //make view visible as we set visibility to invisible while starting drag
-                v.setVisibility(View.VISIBLE);
-                break;
-            case DragEvent.ACTION_DRAG_ENDED:
 
+                //Toast.makeText(view.getContext(), "Drop", Toast.LENGTH_LONG).show();
+                break;
             default:
                 break;
         }
@@ -63,21 +70,33 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     }
 
     @Override
+    public void setDateTime(String time) {
+        ((TextView) findViewById(R.id.time)).setText(time);
+    }
+
+    @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
             ClipData data = ClipData.newPlainText("", "");
-            View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(
-                    view);
+            View.DragShadowBuilder shadowBuilder = (View.DragShadowBuilder) new View.DragShadowBuilder(view);
+
             view.startDrag(data, shadowBuilder, view, 0);
+
             view.setVisibility(View.INVISIBLE);
-            //view.clearAnimation();
+            view.clearAnimation();
             return true;
         } else {
             return false;
         }
     }
 
-    public void rotate(View view){
+    @Override
+    public void onDestroy() {
+        mPresenter.detach();
+        super.onDestroy();
+    }
+
+    private void rotate(View view) {
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(),
                 R.anim.clockwise_animation);
         view.startAnimation(animation);

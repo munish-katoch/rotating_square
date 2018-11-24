@@ -4,33 +4,55 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:baselineAligned="false">
 
     <LinearLayout
         android:id="@+id/main_area"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_alignParentTop="true"
-        >
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/time"
-            android:background="@drawable/rectangle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Time"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#ff0000" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:baselineAligned="false"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="50dp"
+                android:background="@drawable/rectangle"
+                android:gravity="center_horizontal"
+                android:text="Time         "
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#ff0000" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_below="@+id/time"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:gravity="bottom"
+            android:orientation="vertical"
+            android:background="#4085ec" />
+
     </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/drawable_area"
+        android:layout_below="@+id/main_area"
+        android:layout_weight="1"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:background="@color/colorPrimary"
+        android:layout_height="fill_parent"
         android:gravity="bottom|center_vertical"
-        android:orientation="horizontal">
+        android:background="#d4d2d2"
+        android:orientation="vertical">
 
 
     </LinearLayout>
