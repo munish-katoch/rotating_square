@@ -19,24 +19,37 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class WebModule {
-    @Inject
-    @NonNull
-    public Retrofit mRetrofit;
+//    @Inject
+//    public Retrofit mRetrofit;
+//
+//    @Inject
+//    public OkHttpClient mClient;
 
     @Provides
-    public Retrofit getRetrofit() {
+    public OkHttpClient getOkHttpClient() {
+        return new OkHttpClient.Builder().addInterceptor(new Interceptor() {
+            @Override
+            public okhttp3.Response intercept(Chain chain) throws IOException {
+                Request newRequest = chain.request().newBuilder().build();
+                return chain.proceed(newRequest);
+            }
+        }).build();
+    }
+
+    @Provides
+    public Retrofit getRetrofit(OkHttpClient client) {
         return new retrofit2.Retrofit.Builder()
                 .baseUrl(WebService.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
                 // Need for RxJava adapter.
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
     }
 
-    @Singleton
     @Provides
-    public WebService getWebService() {
-        return mRetrofit.create(WebService.class);
+    public WebService getWebService(Retrofit retrofit) {
+        return retrofit.create(WebService.class);
     }
 }
 

@@ -10,6 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -19,6 +21,7 @@ public class DataTimePresenter implements IDataTimePresenter {
     private DataTimeRepository mRepository;
     private IDateTimeView mActivityView;
 
+    @Inject
     public DataTimePresenter(DataTimeRepository repository) {
         mRepository = repository;
     }

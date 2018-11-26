@@ -1,5 +1,6 @@
 package com.katoch.rotatingsquare;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,19 +15,31 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.katoch.rotatingsquare.data.DataTimeRepository;
-import com.katoch.rotatingsquare.presenter.DataTimePresenter;
+import com.katoch.rotatingsquare.di.DaggerMainActivityComponent;
+import com.katoch.rotatingsquare.di.MainActivityComponent;
 import com.katoch.rotatingsquare.presenter.IDataTimePresenter;
+
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasActivityInjector;
+import io.reactivex.annotations.NonNull;
 
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener, View.OnDragListener, IDateTimeView {
 
     private static final String TAG = "MainActivity";
 
-    //ToDo Inject it.
-    public IDataTimePresenter mPresenter;
+    @Inject
+    protected IDataTimePresenter mPresenter;
+
+    @Inject
+    public DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findViewById(R.id.time).setOnTouchListener(this);
@@ -34,7 +47,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
         findViewById(R.id.main_area).setOnDragListener(this);
         findViewById(R.id.drawable_area).setOnDragListener(this);
-        mPresenter = new DataTimePresenter(new DataTimeRepository());
+        //mPresenter = new DataTimePresenter(new DataTimeRepository());
+//        MainActivityComponent component = DaggerMainActivityComponent.builder()
+//                .build();
+//        component.inject(this);
+        //mPresenter = component.getPresenter(component.getRepository());
         mPresenter.attach(this);
         mPresenter.requestDateTimeInfo();
     }
@@ -101,4 +118,5 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 R.anim.clockwise_animation);
         view.startAnimation(animation);
     }
+
 }
