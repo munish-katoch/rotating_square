@@ -3,6 +3,9 @@ package com.katoch.rotatingsquare;
 import android.app.Activity;
 import android.app.Application;
 
+import com.katoch.rotatingsquare.di.DaggerDateTimeApplicationComponent;
+import com.katoch.rotatingsquare.di.DateTimeApplicationComponent;
+
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjector;
@@ -17,6 +20,8 @@ public class DateTimeApplication  extends Application implements HasActivityInje
     @Override
     public void onCreate() {
         super.onCreate();
+        DaggerDateTimeApplicationComponent.create()
+                .inject(this);
 
     }
 
