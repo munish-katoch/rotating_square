@@ -10,6 +10,7 @@ import dagger.Subcomponent;
 import dagger.android.AndroidInjectionModule;
 import dagger.android.AndroidInjector;
 
+@MainActivityScope
 @Subcomponent
 public interface MainActivitySubComponent extends AndroidInjector<MainActivity> {
     @Subcomponent.Builder
